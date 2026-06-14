@@ -1,0 +1,46 @@
+## -----------------------------------------------
+## .dockerignore for HospitalManagementSystem API
+## -----------------------------------------------
+
+# Build output
+**/bin/
+**/obj/
+
+# Visual Studio files
+**/.vs/
+**/*.user
+**/*.suo
+**/*.sln.docstates
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker files (avoid recursive copy)
+**/Dockerfile*
+**/.dockerignore
+
+# Logs & temp
+**/Logs/
+**/log/
+**/*.log
+
+# Secrets & local settings — override via env vars in AWS
+**/appsettings.Development.json
+**/appsettings.Local.json
+
+# Images folder (large assets — mount or use S3 in production)
+**/Images/
+
+# Test projects
+**/*.Tests/
+**/*.Test/
+
+# Node / npm (if any front-end tools exist)
+**/node_modules/
+**/npm-debug.log
+
+# OS files
+Thumbs.db
+.DS_Store

@@ -1,0 +1,29 @@
+{
+  "Information": "This file is used to store default settings for the AWS Lambda deployment. Values here are used by the 'dotnet lambda' CLI tool.",
+
+  "profile": "",
+  "region": "us-east-1",
+
+  "configuration": "Release",
+  "framework": "net6.0",
+
+  "s3-bucket": "hms-lambda-deployments",
+  "s3-prefix": "hospital-management-system/",
+
+  "template": "serverless.template",
+  "template-parameters": "",
+
+  "function-runtime": "dotnet6",
+  "function-memory-size": 512,
+  "function-timeout": 30,
+  "function-handler": "HospitalManagementSystems.API",
+
+  "image-command": "HospitalManagementSystems.API::HospitalManagementSystems.API.LambdaEntryPoint::FunctionHandlerAsync",
+  "package-type": "image",
+
+  "docker-host-build-output-dir": "./bin/Release/net6.0/linux-x64/publish",
+
+  "environment-variables": "ASPNETCORE_ENVIRONMENT=Production",
+
+  "stack-name": "hospital-management-system-api"
+}

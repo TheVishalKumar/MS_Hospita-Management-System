@@ -1,0 +1,95 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "AWS Serverless deployment for Hospital Management System API (.NET 6 / Lambda Container Image)",
+
+  "Parameters": {
+    "Env": {
+      "Type": "String",
+      "Default": "Production",
+      "AllowedValues": ["Development", "Staging", "Production"],
+      "Description": "Deployment environment"
+    },
+    "JwtKey": {
+      "Type": "String",
+      "NoEcho": true,
+      "Description": "JWT signing key (store in AWS Secrets Manager in production)"
+    },
+    "JwtIssuer": {
+      "Type": "String",
+      "Default": "JWTAuthenticationServer",
+      "Description": "JWT issuer"
+    },
+    "JwtAudience": {
+      "Type": "String",
+      "Default": "JWTServicePostmanClient",
+      "Description": "JWT audience"
+    },
+    "DbConnectionString": {
+      "Type": "String",
+      "NoEcho": true,
+      "Description": "SQL Server connection string (use AWS RDS endpoint in production)"
+    }
+  },
+
+  "Globals": {
+    "Function": {
+      "Timeout": 30,
+      "MemorySize": 512,
+      "Environment": {
+        "Variables": {
+          "ASPNETCORE_ENVIRONMENT": { "Ref": "Env" },
+          "JWT_KEY":               { "Ref": "JwtKey" },
+          "JWT_ISSUER":            { "Ref": "JwtIssuer" },
+          "JWT_AUDIENCE":          { "Ref": "JwtAudience" },
+          "DB_CONNECTION_STRING":  { "Ref": "DbConnectionString" }
+        }
+      }
+    }
+  },
+
+  "Resources": {
+    "HospitalManagementSystemApi": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "DockerTag": "latest",
+        "DockerContext": "./",
+        "Dockerfile": "Dockerfile"
+      },
+      "Properties": {
+        "PackageType": "Image",
+        "ImageConfig": {
+          "Command": [
+            "HospitalManagementSystems.API::HospitalManagementSystems.API.LambdaEntryPoint::FunctionHandlerAsync"
+          ]
+        },
+        "Description": "Hospital Management System REST API",
+        "Events": {
+          "ProxyResource": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/{proxy+}",
+              "Method": "ANY"
+            }
+          },
+          "RootResource": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/",
+              "Method": "ANY"
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "Outputs": {
+    "ApiURL": {
+      "Description": "API Gateway endpoint URL",
+      "Value": {
+        "Fn::Sub": "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
+      }
+    }
+  }
+}
